@@ -10,8 +10,8 @@ class Endpoint {
       GraphQLClient(
         link: HttpLink(baseUrl),
         cache: GraphQLCache(
-          store: HiveStore(),
-        ),
+            // store: HiveStore(),
+            ),
       ),
     );
     return _client;
@@ -36,18 +36,26 @@ class BookRepository implements BaseBookRepository {
   @override
   Future<String> deleteBook(String id) async {
     print("hitt");
-    QueryResult result = await _client.value.mutate(MutationOptions(
-      document: gql(GetData.deleteBook),
-      //onCompleted: gql(GetData.getAllBooks),
-    ));
+    QueryResult result = await _client.value.mutate(
+      MutationOptions(
+        document: gql(GetData.deleteBook),
+        variables: {
+          'deleteBookId': id,
+        },
+      ),
+    );
     if (result.hasException) {
       print(result.toString());
-      return result.toString();
+      return result.data!['deleteBook'].toString();
     } else {
       print(result.toString());
-      return result.toString();
+      return result.data!['deleteBook'].toString();
     }
   }
+
+  /*
+ QueryResult(source: QueryResultSource.network, data: {__typename: Mutation, deleteBook: Deleted Succesfully}, context: Context({ResponseExtensions: Instance of 'ResponseExtensions', HttpLinkResponseContext: Instance of 'HttpLinkResponseContext'}), exception: null, timestamp: 2022-02-10 00:38:22.501419)
+  */
 
   @override
   Future<BooksModel> getAllBooks() async {

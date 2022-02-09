@@ -19,7 +19,7 @@ query Books {
 }
 """;
   static String deleteBook = """
-mutation{
+mutation(\$deleteBookId:ID!){
   deleteBook(id: \$deleteBookId)
 }
 """;
