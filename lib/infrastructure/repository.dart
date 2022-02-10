@@ -9,9 +9,7 @@ class Endpoint {
     ValueNotifier<GraphQLClient> _client = ValueNotifier(
       GraphQLClient(
         link: HttpLink(baseUrl),
-        cache: GraphQLCache(
-            // store: HiveStore(),
-            ),
+        cache: GraphQLCache(),
       ),
     );
     return _client;
@@ -20,43 +18,55 @@ class Endpoint {
 
 abstract class BaseBookRepository {
   Future<BooksModel> getAllBooks();
-  void addBook();
+  Future<String> addBook(String name, String genre, String authorId);
   Future<String> deleteBook(String id);
-  void updateBook();
+  Future<String> updateBook(String id, String name);
 }
 
 class BookRepository implements BaseBookRepository {
   final ValueNotifier<GraphQLClient> _client;
   BookRepository(this._client);
   @override
-  void addBook() {
-    // TODO: implement addBook
+  Future<String> addBook(String name, String genre, String authorId) async {
+    QueryResult result = await _client.value.mutate(
+      MutationOptions(
+        document: gql(GetData.addBook),
+        variables: {
+          'name': name,
+          'genre': genre,
+          "authorId": authorId,
+        },
+      ),
+    );
+    if (result.hasException) {
+      return result.data!['addBook'].toString();
+    } else {
+      return result.data!['addBook'].toString();
+    }
   }
 
   @override
   Future<String> deleteBook(String id) async {
-    print("hitt");
     QueryResult result = await _client.value.mutate(
       MutationOptions(
         document: gql(GetData.deleteBook),
         variables: {
           'deleteBookId': id,
         },
+        //update: ,
+        // onCompleted: (dynamic resultData) {
+        //   getAllBooks();
+        // },
       ),
     );
     if (result.hasException) {
-      print(result.toString());
       return result.data!['deleteBook'].toString();
     } else {
-      print(result.toString());
       return result.data!['deleteBook'].toString();
     }
   }
 
-  /*
- QueryResult(source: QueryResultSource.network, data: {__typename: Mutation, deleteBook: Deleted Succesfully}, context: Context({ResponseExtensions: Instance of 'ResponseExtensions', HttpLinkResponseContext: Instance of 'HttpLinkResponseContext'}), exception: null, timestamp: 2022-02-10 00:38:22.501419)
-  */
-
+//
   @override
   Future<BooksModel> getAllBooks() async {
     QueryResult result = await _client.value.query(
@@ -72,7 +82,20 @@ class BookRepository implements BaseBookRepository {
   }
 
   @override
-  void updateBook() {
-    // TODO: implement updateBook
+  Future<String> updateBook(String id, String name) async {
+    QueryResult result = await _client.value.mutate(
+      MutationOptions(
+        document: gql(GetData.updateBook),
+        variables: {
+          'updateBookId': id,
+          'name': name,
+        },
+      ),
+    );
+    if (result.hasException) {
+      return result.data!['updateBook'].toString();
+    } else {
+      return result.data!['updateBook'].toString();
+    }
   }
 }

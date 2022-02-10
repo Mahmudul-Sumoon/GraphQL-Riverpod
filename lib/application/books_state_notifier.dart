@@ -25,10 +25,34 @@ class BookResponseStateNotifier extends StateNotifier<BookResponseState> {
       : super(const BookResponseState.initial());
   final BookRepository bookRepository;
 
-  Future<String> deleteBooks(String id) async {
+  Future<String> deleteBook(String id) async {
     try {
       state = const BookResponseState.loading();
       final data = await bookRepository.deleteBook(id);
+      state = BookResponseState.success(data);
+      return state.toString();
+    } catch (e) {
+      state = BookResponseState.error(e.toString());
+      return state.toString();
+    }
+  }
+
+  Future<String> updateBook(String id, String name) async {
+    try {
+      state = const BookResponseState.loading();
+      final data = await bookRepository.updateBook(id, name);
+      state = BookResponseState.success(data);
+      return state.toString();
+    } catch (e) {
+      state = BookResponseState.error(e.toString());
+      return state.toString();
+    }
+  }
+
+  Future<String> addBook(String name, String genre, String authorId) async {
+    try {
+      state = const BookResponseState.loading();
+      final data = await bookRepository.addBook(name, genre, authorId);
       state = BookResponseState.success(data);
       return state.toString();
     } catch (e) {

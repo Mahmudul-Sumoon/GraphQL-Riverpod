@@ -7,7 +7,10 @@ void main() {
   // await initHiveForFlutter();
   runApp(
     const ProviderScope(
-      child: MaterialApp(home: MyApp()),
+      child: MaterialApp(
+        home: MyApp(),
+        debugShowCheckedModeBanner: false,
+      ),
     ),
   );
 }
@@ -37,7 +40,14 @@ class MyApp extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          const String name = "hagu2";
+          const String genre = "paikhana";
+          const String authorId = "61ffee4cc42ea354638c7001";
+          ref
+              .read(bookResponseStateNotifierProvider.notifier)
+              .addBook(name, genre, authorId);
+        },
         child: const Icon(Icons.add),
       ),
     );

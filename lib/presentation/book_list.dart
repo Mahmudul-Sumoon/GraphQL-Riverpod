@@ -18,11 +18,14 @@ class BookList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(bookStateNotifierProvider);
+    ref.watch(bookResponseStateNotifierProvider);
     ref.listen<BookResponseState>(bookResponseStateNotifierProvider,
         (previous, current) {
       current.maybeWhen(
         success: (d) => ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            duration: const Duration(milliseconds: 10),
             content: current.maybeWhen(
               success: (d) {
                 resfreshBookList(ref);
@@ -47,44 +50,50 @@ class BookList extends ConsumerWidget {
       );
     });
     return Expanded(
-      child: RefreshIndicator(
-        onRefresh: () =>
-            ref.watch(bookStateNotifierProvider.notifier).getAllBooks(),
-        child: ListView.separated(
-            separatorBuilder: (context, index) => const Divider(),
-            itemCount: books.books!.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                onLongPress: () => ref
-                    .read(bookResponseStateNotifierProvider.notifier)
-                    .deleteBooks(books.books![index].id.toString()),
-                leading: CircleAvatar(
-                  child: Text(
-                      books.books![index].name.toString()[0].toUpperCase()),
-                ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(books.books![index].name.toString()),
-                    Column(
-                      children: [
-                        Text(books.books![index].author!.name.toString()),
-                        for (int i = 0;
-                            i < books.books![index].author!.books!.length;
-                            i++)
-                          Text(
-                            books.books![index].author!.books![i].name
-                                .toString(),
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-                subtitle: Text(books.books![index].genre.toString()),
-              );
-            }),
-      ),
+      child: ListView.separated(
+          physics: const AlwaysScrollableScrollPhysics(),
+          separatorBuilder: (context, index) => const Divider(),
+          itemCount: books.books!.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              //delete
+              onLongPress: () => ref
+                  .read(bookResponseStateNotifierProvider.notifier)
+                  .deleteBook(books.books![index].id.toString()),
+              leading: CircleAvatar(
+                child:
+                    Text(books.books![index].name.toString()[0].toUpperCase()),
+              ),
+              //update
+              trailing: IconButton(
+                  onPressed: () {
+                    const String name = "bedna";
+                    ref
+                        .read(bookResponseStateNotifierProvider.notifier)
+                        .updateBook(books.books![index].id.toString(), name);
+                  },
+                  icon: const Icon(Icons.edit)),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(books.books![index].name.toString()),
+                  Column(
+                    children: [
+                      Text(books.books![index].author!.name.toString()),
+                      for (int i = 0;
+                          i < books.books![index].author!.books!.length;
+                          i++)
+                        Text(
+                          books.books![index].author!.books![i].name.toString(),
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+              subtitle: Text(books.books![index].genre.toString()),
+            );
+          }),
     );
   }
 }
