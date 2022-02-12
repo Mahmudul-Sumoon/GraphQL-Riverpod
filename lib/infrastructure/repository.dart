@@ -9,7 +9,9 @@ class Endpoint {
     ValueNotifier<GraphQLClient> _client = ValueNotifier(
       GraphQLClient(
         link: HttpLink(baseUrl),
-        cache: GraphQLCache(),
+        cache: GraphQLCache(
+            //   typePolicies: ,
+            ),
       ),
     );
     return _client;
@@ -53,10 +55,6 @@ class BookRepository implements BaseBookRepository {
         variables: {
           'deleteBookId': id,
         },
-        //update: ,
-        // onCompleted: (dynamic resultData) {
-        //   getAllBooks();
-        // },
       ),
     );
     if (result.hasException) {
@@ -69,11 +67,14 @@ class BookRepository implements BaseBookRepository {
 //
   @override
   Future<BooksModel> getAllBooks() async {
+    print("get all book hit");
     QueryResult result = await _client.value.query(
-      QueryOptions(
+      WatchQueryOptions(
         document: gql(GetData.getAllBooks),
+        fetchPolicy: FetchPolicy.networkOnly,
       ),
     );
+    //print(BooksModel.fromJson(result.data!));
     if (result.hasException) {
       return BooksModel.fromJson(result.data!);
     } else {

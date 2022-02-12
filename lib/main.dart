@@ -4,7 +4,6 @@ import 'package:test_project_graphql/presentation/book_list.dart';
 import 'package:test_project_graphql/providers.dart';
 
 void main() {
-  // await initHiveForFlutter();
   runApp(
     const ProviderScope(
       child: MaterialApp(
@@ -26,23 +25,19 @@ class MyApp extends ConsumerWidget {
         title: const Text("Graphql"),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            books.when(
-              initial: () => Container(),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              success: (books) => BookList(
-                books: books,
-              ),
-              error: (s) => Center(child: Text(s!)),
-            ),
-          ],
+        child: books.when(
+          initial: () => Container(),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          success: (books) => BookList(
+            books: books,
+          ),
+          error: (s) => Center(child: Text(s!)),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          const String name = "hagu2";
-          const String genre = "paikhana";
+          const String name = "valobasha";
+          const String genre = "sukh";
           const String authorId = "61ffee4cc42ea354638c7001";
           ref
               .read(bookResponseStateNotifierProvider.notifier)
